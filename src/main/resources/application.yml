@@ -1,0 +1,53 @@
+spring:
+  application:
+    name: "(NewsAi)FakeNewsDetectorSummarizer"
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/newsai?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: YOUR-MYSQL-Password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+
+  servlet:
+    multipart:
+      max-file-size: 1000MB
+      max-request-size: 1000MB
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: your-key
+            client-secret: your-secret-code
+            scope:
+              - profile
+              - email
+
+  ai:
+    openai:
+      api-key: YOUR_KEY
+      base-url: https://api.groq.com/openai
+      chat:
+        options:
+          model: openai/gpt-oss-120b
+
+server:
+  port: 2222
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+
+app:
+  admin-gmail-email: YOUR-GMAIL-ID
+  # admin-gmail-email: ${Google Email ID:YOUR-GMAIL-ID}  # alternative
+  admin-gmail-passcode: YOUR-Passcode

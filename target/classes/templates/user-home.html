@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NewsAi - Fake News Detection</title>
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+	rel="stylesheet">
+<style>
+body, html {
+	margin: 0;
+	padding: 0;
+	font-family: 'Inter', sans-serif;
+	background: #fff;
+	color: #222;
+}
+
+/* Navbar */
+.navbar-custom {
+	background: #fff;
+	border-radius: 20px;
+	margin: 20px auto;
+	padding: 10px 20px;
+	max-width: 1200px;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-custom .nav-link {
+	color: #000 !important;
+	font-weight: 500;
+	margin-right: 20px;
+}
+
+.btn-login, .btn-signup {
+	border: 1px solid #ccc;
+	border-radius: 25px;
+	padding: 5px 15px;
+	margin-right: 10px;
+	background: transparent;
+	font-weight: 500;
+}
+
+.btn-signup {
+	background: #6f42c1;
+	color: #fff;
+}
+
+/* Hero */
+.hero {
+	position: relative;
+	height: 85vh;
+	background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)),
+		url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f')
+		no-repeat center center/cover;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	color: #fff;
+}
+
+.author {
+	display: flex;
+	align-items: center;
+	margin-top: 30px;
+}
+
+.author img {
+	width: 50px;
+	height: 50px;
+	border-radius: 50%;
+	margin-right: 15px;
+}
+
+.author-info {
+	font-size: 0.9rem;
+}
+
+.social-icons i {
+	margin-left: 10px;
+	font-size: 1.2rem;
+	color: #ccc;
+	cursor: pointer;
+}
+
+.social-icons i:hover {
+	color: #fff;
+}
+
+.meta {
+	margin-top: 25px;
+	display: flex;
+	gap: 15px;
+}
+
+.tag {
+	border: 1px solid #fff;
+	border-radius: 30px;
+	padding: 5px 15px;
+	font-size: 0.9rem;
+}
+
+/* Dummy News Section */
+.news-section {
+	padding: 60px 10%;
+	background: #f8f9fa;
+}
+
+.news-section h2 {
+	text-align: center;
+	margin-bottom: 40px;
+	font-weight: 600;
+}
+
+.news-card {
+	border-radius: 12px;
+	overflow: hidden;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	transition: transform 0.3s;
+}
+
+.news-card:hover {
+	transform: translateY(-5px);
+}
+
+.news-card img {
+	width: 100%;
+	height: 180px;
+	object-fit: cover;
+}
+
+.news-card-body {
+	padding: 15px;
+}
+
+.news-card h5 {
+	font-weight: 600;
+}
+
+.btn-detect {
+	margin-top: 10px;
+	border-radius: 25px;
+}
+
+.modal-backdrop.show {
+	opacity: 0.7 !important; /* dim level */
+	background-color: #000; /* black overlay */
+}
+
+.sidebar .nav-link {
+	transition: all 0.3s ease;
+	border-radius: 5px; /* Rounded corners on hover */
+}
+
+.sidebar .nav-link:hover {
+	background-color: #e9ecef; /* Light gray background */
+	color: #0d6efd !important; /* Bootstrap primary color */
+	padding-left: 10px; /* Slight slide effect */
+}
+
+.btn-danger:hover {
+	background-color: #dc3545cc; /* Slightly lighter red */
+	transform: translateY(-2px); /* Subtle lift effect */
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+	transition: all 0.3s ease;
+}
+
+
+.nav-link.active {
+  background-color: #0d6efd;
+  color: #fff !important;
+  border-radius: 5px;
+}
+
+footer a:hover {
+  color: #ffc107; /* Bootstrap warning color for hover */
+  text-decoration: none;
+}
+
+</style>
+</head>
+<body>
+	<p class="bg-primary p-2 text-center text-white" th:text="${msg}"></p>
+	<!-- Navbar -->
+	<nav class="navbar navbar-expand-lg navbar-custom">
+		<div class="container-fluid">
+			<a class="navbar-brand fw-bold" href="user-home">NewsAi</a>
+			<button class="navbar-toggler" type="button"
+				data-bs-toggle="collapse" data-bs-target="#navMenu">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse justify-content-between"
+				id="navMenu">
+				<ul class="navbar-nav">
+					<li class="nav-item"><a class="nav-link" href="user-home">Home</a></li>
+					<li class="nav-item"><a class="nav-link" href="dashboard">Dashboard</a></li>
+					<li class="nav-item"><a class="nav-link" href="allnews">All
+							News</a></li>
+				</ul>
+				<!-- Right Side: Only Profile Icon -->
+<div>
+  <a href="#" data-bs-toggle="modal" data-bs-target="#profileModal">
+    <img th:src="@{/getPhoto(email=${session.email})}" alt="static/person.jpg"
+                  class="rounded-circle border border-2 profile-circle"
+                   style="width: 50px; height: 50px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
+  </a>
+</div>
+			</div>
+		</div>
+	</nav>
+
+
+	<!-- Hero -->
+<section class="hero py-5 bg-light">
+  <div class="container">
+    <div class="text-center mb-4">
+      <h1 class="fw-bold">AI News Summarizer & Fake News Detector</h1>
+     
+    </div>
+
+    <div class="card shadow-sm p-4 mx-auto" style="max-width: 700px;">
+      <form method="post" action="analyze">
+        <div class="mb-3">
+          <label for="article" class="form-label fw-semibold">Write Article </label>
+          <textarea class="form-control" id="article" name="article" rows="6" 
+                    placeholder="Paste the news article text here" required
+                    style="background-color: rgba(255, 255, 255, 0.05); 
+                           border: 1px solid rgba(0,0,0,0.1); 
+                           color: #000; 
+                           backdrop-filter: blur(5px);"></textarea>
+        </div>
+
+        <!-- CSRF Token -->
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+        <div class="d-grid">
+          <button class="btn btn-primary btn-lg fw-bold" type="submit">
+            Analyze Article
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+	<!-- Profile Modal -->
+<div class="modal fade" id="profileModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content rounded-4 shadow-lg border-0 overflow-hidden">
+
+      <!-- Modal Header -->
+      <div class="modal-header bg-primary text-white border-0">
+        <h5 class="modal-title fw-bold">User Profile</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body d-flex p-0" style="height: 450px;">
+
+        <!-- Sidebar -->
+        <div class="bg-light p-3 sidebar" style="width: 200px; border-right: 1px solid #ddd;">
+          <ul class="nav flex-column gap-2">
+            <li class="nav-item">
+              <a href="#" class="nav-link d-flex align-items-center gap-2 text-dark active"
+                 onclick="showSection('details')">
+                <i class="fas fa-user"></i> Profile Details
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link d-flex align-items-center gap-2 text-dark"
+                 onclick="showSection('edit')">
+                <i class="fas fa-edit"></i> Edit Profile
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link d-flex align-items-center gap-2 text-dark"
+                 onclick="showSection('password')">
+                <i class="fas fa-lock"></i> Change Password
+              </a>
+            </li>
+            <li class="nav-item mt-3">
+              <form action="logout" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+           <button type="submit" class="btn btn-danger w-100" style="margin-top: 150px;">
+                  <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+              </form>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Section Container -->
+        <div class="flex-grow-1 p-4 overflow-auto">
+
+          <!-- Profile Details -->
+          <div id="details" class="section text-center" style="height: 100%;">
+            <div class="d-flex justify-content-center mb-3">
+              <img th:src="@{/getPhoto(email=${session.email})}" alt="static/person.jpg"
+                   class="rounded-circle border border-2"
+                   style="width: 120px; height: 120px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
+            </div>
+            <h3 class="fw-bold mb-2" th:text="${session.name}" style="color: #0d6efd;"></h3>
+            <p class="text-muted mb-1">
+              <i class="fas fa-envelope me-2"></i> <span th:text="${session.email}"></span>
+            </p>
+            <br><br>
+            <p class="text-secondary small mt-3">Welcome to your profile! You can edit your details or change your password from the sidebar.</p>
+          </div>
+
+          <!-- Edit Profile Form -->
+          <div id="edit" class="section" style="display:none; height: 100%;">
+            <div class="p-4 rounded-4 shadow" style="background-color: #ffffff; border: 1px solid #dee2e6; min-height: 400px;">
+
+              <!-- Profile Photo Section -->
+              <div class="d-flex align-items-center gap-3 mb-4">
+                <img th:src="@{/getPhoto(email=${session.email})}" alt="static/person.jpg"
+                     class="rounded-circle border"
+                     style="width: 90px; height: 90px; object-fit: cover; box-shadow: 0 3px 10px rgba(0,0,0,0.1);">
+                <div class="flex-grow-1">
+                  <label class="form-label fw-semibold">Change Photo</label>
+                  <form action="UpdatePhoto" method="post" enctype="multipart/form-data"
+                        class="d-flex gap-2 align-items-center">
+                    <input type="file" name="photo" class="form-control form-control-sm" required>
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <button type="submit" class="btn btn-success btn-sm">Update</button>
+                  </form>
+                </div>
+              </div>
+      <form action="UpdateProfile" method="post">
+              <!-- Name Field -->
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Full Name</label>
+                <input type="text" name="name" th:value="${session.name}" class="form-control" placeholder="Enter your full name">
+              </div>
+
+              <!-- Phone Field -->
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Phone Number</label>
+                <input type="tel" name="phone" th:value="${session.phone}" pattern="[0-9]+" maxlength="10" minlength="10"
+                       class="form-control" placeholder="Enter your phone number">
+              </div>
+
+              <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+              <!-- Submit Button -->
+              <div class="d-flex justify-content-center mt-4">
+                <button type="submit" class="btn btn-primary px-4">Update Profile</button>
+              </div>
+
+</form>
+            </div>
+          </div>
+
+          <!-- Change Password Form -->
+          <div id="password" class="section" style="display:none; height: 100%;">
+            <div class="card p-4 rounded-3 shadow-sm">
+              <form action="UpdatePassword" method="post" class="d-flex flex-column gap-3">
+                <div th:if="${session.passwordFlag}" class="form-group">
+                  <label for="oldpassword" class="form-label fw-semibold">Old Password</label>
+                  <input type="password" id="oldpassword" name="oldpassword" class="form-control" placeholder="Enter your old password">
+                </div>
+                <div class="form-group">
+                  <label for="newpassword" class="form-label fw-semibold">New Password</label>
+                  <input type="password" id="newpassword" name="newpassword" class="form-control" placeholder="Enter your new password">
+                </div>
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <button type="submit" class="btn btn-success mt-3 w-100 fw-semibold">Update Password</button>
+              </form>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
+
+<!-- Footer -->
+<footer class="bg-dark text-white pt-5 pb-4">
+  <div class="container text-md-left">
+
+    <!-- Top Row: Logo and About -->
+    <div class="row text-md-left">
+
+      <!-- Brand / Logo -->
+      <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
+        <h5 class="text-uppercase mb-4 font-weight-bold text-warning">NewsAi</h5>
+        <p>Your go-to platform for the latest news powered by AI. Stay informed, stay ahead.</p>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mt-3">
+        <h6 class="text-uppercase mb-4 font-weight-bold">Quick Links</h6>
+        <p><a href="#" class="text-white text-decoration-none">Home</a></p>
+        <p><a href="#" class="text-white text-decoration-none">About Us</a></p>
+        <p><a href="#" class="text-white text-decoration-none">Features</a></p>
+        <p><a href="#" class="text-white text-decoration-none">Contact</a></p>
+      </div>
+
+      <!-- Resources -->
+      <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mt-3">
+        <h6 class="text-uppercase mb-4 font-weight-bold">Resources</h6>
+        <p><a href="#" class="text-white text-decoration-none">Blog</a></p>
+        <p><a href="#" class="text-white text-decoration-none">FAQ</a></p>
+        <p><a href="#" class="text-white text-decoration-none">Support</a></p>
+        <p><a href="#" class="text-white text-decoration-none">Privacy Policy</a></p>
+      </div>
+
+      <!-- Social Media -->
+      <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mt-3">
+        <h6 class="text-uppercase mb-4 font-weight-bold">Follow Us</h6>
+        <a href="#" class="text-white me-4">
+          <i class="fab fa-facebook-f fa-lg"></i>
+        </a>
+        <a href="#" class="text-white me-4">
+          <i class="fab fa-twitter fa-lg"></i>
+        </a>
+        <a href="#" class="text-white me-4">
+          <i class="fab fa-linkedin-in fa-lg"></i>
+        </a>
+        <a href="#" class="text-white me-4">
+          <i class="fab fa-instagram fa-lg"></i>
+        </a>
+      </div>
+
+    </div>
+
+    <!-- Bottom Row: Copyright -->
+    <div class="row mt-4">
+      <div class="col-md-12 text-center">
+        <p class="mb-0">&copy; 2025 NewsAi. All Rights Reserved.</p>
+      </div>
+           <div class="col-md-12 text-center">
+        <p class="mb-0">&copy;Designed By Shubham Tyagi.</p>
+      </div>
+    </div>
+
+  </div>
+</footer>
+
+
+
+<!-- Script for switching sections and highlighting active link -->
+<script>
+function showSection(sectionId) {
+  const sections = ['details', 'edit', 'password'];
+  const links = document.querySelectorAll('.sidebar .nav-link');
+
+  // Hide all sections
+  sections.forEach(s => document.getElementById(s).style.display = 'none');
+  // Show selected section
+  document.getElementById(sectionId).style.display = 'block';
+
+  // Remove 'active' from all links
+  links.forEach(link => link.classList.remove('active'));
+
+  // Add 'active' to clicked link
+  const activeLink = Array.from(links).find(link => link.getAttribute('onclick') === `showSection('${sectionId}')`);
+  if (activeLink) activeLink.classList.add('active');
+}
+</script>
+
+
+	
+
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
