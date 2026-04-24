@@ -46,3 +46,13 @@ The system is built using Spring Boot and secured with JWT authentication. It pr
 
 ### Request
 POST /analyze
+
+## How to Run
+
+### Backend
+1. Start Spring Boot application
+2. Ensure it runs on port 2222
+3. Clone this repo
+4. Open in STS
+5. Run as Spring Boot app
+6. Visit: http://localhost:2222
