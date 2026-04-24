@@ -46,12 +46,3 @@ The system is built using Spring Boot and secured with JWT authentication. It pr
 
 ### Request
 POST /analyze
-
-```json
-{
-  {
-  "result": "Fake",
-  "Summary": "this is a fake news while about this there is something"
-}
-  
-}
